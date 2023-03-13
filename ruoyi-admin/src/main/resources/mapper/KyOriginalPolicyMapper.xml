@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.web.mapper.KyOriginalPolicyMapper">
+    
+    <resultMap type="KyOriginalPolicy" id="KyOriginalPolicyResult">
+        <result property="id"    column="id"    />
+        <result property="tittle"    column="tittle"    />
+        <result property="content"    column="content"    />
+        <result property="policyLevel"    column="policy_level"    />
+        <result property="publishingDepartment"    column="publishing_department"    />
+        <result property="policyCategory"    column="policy_category"    />
+        <result property="applicableIndustries"    column="applicable_industries"    />
+        <result property="publishTime"    column="publish_time"    />
+        <result property="state"    column="state"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="appendixUrl"    column="appendix_url"    />
+        <result property="publishUnit"    column="publish_unit"    />
+        <result property="publisher"    column="publisher"    />
+        <result property="meansUrl"    column="means_url"    />
+        <result property="itemStatus"    column="item_status"    />
+        <result property="tagIds"    column="tag_ids"    />
+        <result property="enterpriseSize"    column="enterprise_size"    />
+        <result property="publishStatus"    column="publish_status"    />
+    </resultMap>
+
+    <sql id="selectKyOriginalPolicyVo">
+        select id, tittle, content,policy_level, publishing_department, policy_category, applicable_industries, publish_time, state, create_time, create_by, appendix_url, publish_unit, publisher, means_url, item_status, tag_ids, enterprise_size, publish_status from ky_original_policy
+    </sql>
+
+    <select id="selectKyOriginalPolicyList" parameterType="KyOriginalPolicy" resultMap="KyOriginalPolicyResult">
+        <include refid="selectKyOriginalPolicyVo"/>
+        <where>  
+            <if test="tittle != null  and tittle != ''"> and tittle like concat('%', #{tittle}, '%')</if>
+            <if test="policyLevel != null "> and policy_level = #{rank}</if>
+            <if test="publishingDepartment != null  and publishingDepartment != ''"> and publishing_department = #{publishingDepartment}</if>
+            <if test="applicableIndustries != null  and applicableIndustries != ''"> and applicable_industries = #{applicableIndustries}</if>
+            <if test="params.beginPublishTime != null and params.beginPublishTime != '' and params.endPublishTime != null and params.endPublishTime != ''"> and publish_time between #{params.beginPublishTime} and #{params.endPublishTime}</if>
+            <if test="state != null "> and state = #{state}</if>
+            <if test="publisher != null  and publisher != ''"> and publisher = #{publisher}</if>
+            <if test="itemStatus != null "> and item_status = #{itemStatus}</if>
+            <if test="enterpriseSize != null  and enterpriseSize != ''"> and enterprise_size = #{enterpriseSize}</if>
+            <if test="publishStatus != null "> and publish_status = #{publishStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectKyOriginalPolicyById" parameterType="Long" resultMap="KyOriginalPolicyResult">
+        <include refid="selectKyOriginalPolicyVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertKyOriginalPolicy" parameterType="KyOriginalPolicy" useGeneratedKeys="true" keyProperty="id">
+        insert into ky_original_policy
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="tittle != null">tittle,</if>
+            <if test="content != null">content,</if>
+            <if test="policyLevel != null">policy_level,</if>
+            <if test="publishingDepartment != null">publishing_department,</if>
+            <if test="policyCategory != null">policy_category,</if>
+            <if test="applicableIndustries != null">applicable_industries,</if>
+            <if test="publishTime != null">publish_time,</if>
+            <if test="state != null">state,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="appendixUrl != null">appendix_url,</if>
+            <if test="publishUnit != null">publish_unit,</if>
+            <if test="publisher != null">publisher,</if>
+            <if test="meansUrl != null">means_url,</if>
+            <if test="itemStatus != null">item_status,</if>
+            <if test="tagIds != null and tagIds != ''">tag_ids,</if>
+            <if test="enterpriseSize != null">enterprise_size,</if>
+            <if test="publishStatus != null">publish_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="tittle != null">#{tittle},</if>
+            <if test="content != null">#{content},</if>
+            <if test="policyLevel != null">#{policyLevel},</if>
+            <if test="publishingDepartment != null">#{publishingDepartment},</if>
+            <if test="policyCategory != null">#{policyCategory},</if>
+            <if test="applicableIndustries != null">#{applicableIndustries},</if>
+            <if test="publishTime != null">#{publishTime},</if>
+            <if test="state != null">#{state},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="appendixUrl != null">#{appendixUrl},</if>
+            <if test="publishUnit != null">#{publishUnit},</if>
+            <if test="publisher != null">#{publisher},</if>
+            <if test="meansUrl != null">#{meansUrl},</if>
+            <if test="itemStatus != null">#{itemStatus},</if>
+            <if test="tagIds != null and tagIds != ''">#{tagIds},</if>
+            <if test="enterpriseSize != null">#{enterpriseSize},</if>
+            <if test="publishStatus != null">#{publishStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateKyOriginalPolicy" parameterType="KyOriginalPolicy">
+        update ky_original_policy
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tittle != null">tittle = #{tittle},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="policyLevel != null">policy_level= #{policyLevel},</if>
+            <if test="publishingDepartment != null">publishing_department = #{publishingDepartment},</if>
+            <if test="policyCategory != null">policy_category = #{policyCategory},</if>
+            <if test="applicableIndustries != null">applicable_industries = #{applicableIndustries},</if>
+            <if test="publishTime != null">publish_time = #{publishTime},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="appendixUrl != null">appendix_url = #{appendixUrl},</if>
+            <if test="publishUnit != null">publish_unit = #{publishUnit},</if>
+            <if test="publisher != null">publisher = #{publisher},</if>
+            <if test="meansUrl != null">means_url = #{meansUrl},</if>
+            <if test="itemStatus != null">item_status = #{itemStatus},</if>
+            <if test="tagIds != null and tagIds != ''">tag_ids = #{tagIds},</if>
+            <if test="enterpriseSize != null">enterprise_size = #{enterpriseSize},</if>
+            <if test="publishStatus != null">publish_status = #{publishStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteKyOriginalPolicyById" parameterType="Long">
+        delete from ky_original_policy where id = #{id}
+    </delete>
+
+    <delete id="deleteKyOriginalPolicyByIds" parameterType="String">
+        delete from ky_original_policy where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
