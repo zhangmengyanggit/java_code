@@ -43,9 +43,9 @@ export function delEnterprise(id) {
   })
 }
 //获取市
-export function getCity(CityId,level) {
+export function getCity(CityId) {
   return request({
-    url: '/common/getCityList?cityId=' + CityId + "&level=" + level,
+    url: '/common/getCityList?cityId=' + CityId ,
     method: 'get'
   })
 }

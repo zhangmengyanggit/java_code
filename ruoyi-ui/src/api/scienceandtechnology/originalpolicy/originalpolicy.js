@@ -43,3 +43,50 @@ export function delOriginalpolicy(id) {
     method: 'delete'
   })
 }
+
+// 查询所有标签
+export function getTags() {
+  return request({
+    url: '/scienceandtechnology/tag/getTagsAll',
+    method: 'get'
+  })
+}
+ 
+// 查询政策解读详细
+export function getInterpretationPolicy(id) {
+  return request({
+    url: '/scienceandtechnology/originalpolicy/getInterpretationPolicy/' + id,
+    method: 'get'
+  })
+}
+//获取市
+export function getCity(cityId) {
+  return request({
+    url: '/common/getCityList?cityId=' + cityId,
+    method: 'get'
+  })
+}
+//获取部门
+export function getDepartment(parentId){
+  return request({
+    url: '/common/getDepartment?parentId=' + parentId,
+    method: 'get'
+  })
+}
+//新增政策解读
+export function addInterpretationPolicy(data) {
+  return request({
+    url: '/scienceandtechnology/originalpolicy/addInterpretationPolicy',
+    method: 'post',
+    data: data
+  })
+}
+
+//修改政策解读
+export function editInterpretationPolicy(data) {
+  return request({
+    url: '/scienceandtechnology/originalpolicy/editInterpretationPolicy',
+    method: 'post',
+    data: data
+  })
+}

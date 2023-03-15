@@ -6,12 +6,11 @@
       </el-form-item>
 
       <el-form-item label="企业法人" prop="juridicalPerson">
-        <el-input v-model="queryParams.juridicalPerson" placeholder="请输入企业法人" clearable @keyup.enter.native="handleQuery"
-          style="width:70%" />
+        <el-input v-model="queryParams.juridicalPerson" placeholder="请输入企业法人" clearable
+          @keyup.enter.native="handleQuery" />
       </el-form-item>
-      <el-form-item label="企业法人电话" label-width="100px" prop="juridicalPersonPhone">
-        <el-input v-model="queryParams.juridicalPersonPhone" placeholder="请输入企业法人电话" clearable
-          @keyup.enter.native="handleQuery" style="width:70%" />
+      <el-form-item label="联系人" label-width="100px" prop="linkman">
+        <el-input v-model="queryParams.linkman" placeholder="请输入企业法人电话" clearable @keyup.enter.native="handleQuery" />
       </el-form-item>
       <el-form-item label="资产总额区间(万元)" label-width="140px" prop="totalAssetsRange">
         <el-select v-model="queryParams.totalAssetsRange" style="width:70%" placeholder="请选择资产总额区间" clearable>
@@ -22,7 +21,15 @@
             :value="option.value" />
         </el-select>
       </el-form-item>
-
+      <el-form-item label="产业分类" prop="industryOneLevel">
+        <el-select v-model="queryParams.industryOneLevel" placeholder="请选择产业分类" clearable>
+          <el-option value="">
+            请选择
+          </el-option>
+          <el-option v-for="dict in dict.type.applicable_industries" :key="dict.value" :label="dict.label"
+            :value="dict.value" />
+        </el-select>
+      </el-form-item>
       <el-form-item label="注册时间">
         <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange"
           range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
@@ -60,23 +67,28 @@
 
     <el-table v-loading="loading" :data="enterpriseList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="企业名称"  width="120" align="center" prop="name" />
+      <el-table-column label="企业名称" width="120" align="center" prop="name" />
       <el-table-column label="注册企业地址" width="100" align="center" prop="address" />
       <el-table-column label="企业法人" align="center" prop="juridicalPerson" />
-      <el-table-column label="企业法人电话"  width="110" align="center" prop="juridicalPersonPhone" />
+      <el-table-column label="企业法人电话" width="110" align="center" prop="juridicalPersonPhone" />
       <el-table-column label="注册时间" align="center" prop="registrationTime" width="180">
         <template slot-scope="scope">
           <span>{{ parseTime(scope.row.registrationTime, '{y}-{m}-{d}') }}</span>
         </template>
       </el-table-column>
       <el-table-column label="社会统一信用代码号" width="140" align="center" prop="socialUnifiedCreditCodeNumber" />
-      <el-table-column label="企业性质或控股类型" width="140" align="center" prop="enterpriseNature" >
+      <el-table-column label="企业性质或控股类型" width="140" align="center" prop="enterpriseNature">
         <template slot-scope="scope">
-            <span v-for="item in dict.type.enterprise_nature"  v-text="item.label"  v-if="item.value== scope.row.enterpriseNature"></span>
+          <span v-for="item in dict.type.enterprise_nature" v-text="item.label"
+            v-if="item.value == scope.row.enterpriseNature"></span>
         </template>
 
       </el-table-column>
-      <el-table-column label="登记注册类型" width="100" align="center" prop="registrationType" />
+      <el-table-column label="营业期限" width="100" align="center" prop="businessTerm">
+        <template slot-scope="scope">
+          <span>{{ parseTime(scope.row.businessTerm, '{y}-{m}-{d}') }}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="资产总额区间" width="100" align="center" prop="totalAssetsRange">
         <template slot-scope="scope">
           <span v-if="scope.row.totalAssetsRange == 1">0至50万</span>
@@ -90,14 +102,14 @@
       <el-table-column label="注册资本(万元)" align="center" width="120" prop="registeredCapital" />
       <el-table-column label="实缴资本(万元)" align="center" width="120" prop="seeAlso" />
       <el-table-column label="官方网站" align="center" prop="officialWebsite" />
-      <el-table-column label="企业邮箱"  width="120" align="center" prop="enterpriseMailbox" />
+      <el-table-column label="企业邮箱" width="120" align="center" prop="enterpriseMailbox" />
       <el-table-column label="在职人数" align="center" prop="numberOfEmployees" />
       <el-table-column label="营业执照" align="center" prop="businessLicenseUrl">
         <template slot-scope="scope">
           <image-preview :src="scope.row.businessLicenseUrl" :width="50" :height="50" />
         </template>
       </el-table-column>
-      <el-table-column label="操作" align="center"  width="120"  class-name="small-padding fixed-width">
+      <el-table-column label="操作" align="center" width="120" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
             v-hasPermi="['enterprise:enterprise:edit']">修改</el-button>
@@ -111,8 +123,8 @@
       @pagination="getList" />
 
     <!-- 添加或修改企业对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="1300px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+    <el-dialog :title="title" :visible.sync="open" width="1000px" append-to-body>
+      <el-form ref="form" :model="form" :rules="rules" label-width="150px">
         <el-row>
           <el-col :span="12">
             <el-form-item label="企业名称" prop="name">
@@ -120,10 +132,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="注册时间" prop="registrationTime" label-width="93px">
-              <el-date-picker clearable v-model="form.registrationTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
-                placeholder="请选择注册时间">
-              </el-date-picker>
+            <el-form-item label="在职人数" prop="numberOfEmployees">
+              <el-input-number v-model="form.numberOfEmployees" :min='1' placeholder="请输入在职人数"></el-input-number>
             </el-form-item>
           </el-col>
 
@@ -138,53 +148,79 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="企业法人电话" prop="juridicalPersonPhone" label-width="120px">
+            <el-form-item label="企业法人电话" prop="juridicalPersonPhone">
               <el-input v-model="form.juridicalPersonPhone" placeholder="请输入企业法人电话" />
             </el-form-item>
           </el-col>
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item label="所属产业" prop="industryOneLevel">
-              <el-select v-model="form.industryOneLevel" placeholder="请输入所属行业"
-                 style="width:33%">
-                <el-option v-for="item in ProvinceList" :key="item.regionId" :label="item.regionName"
-                  :value="item.regionId" :disabled="item.status == 1"></el-option>
-              </el-select>
-              <el-select v-model="form.industryTwoLevel" placeholder="请输入所属产业"  style="width:33%">
+            <el-form-item label="联系人" prop="linkman">
+              <el-input v-model="form.linkman" placeholder="请输入企业联系人" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="联系人电话" prop="linkmanPhone">
+              <el-input v-model="form.linkmanPhone" placeholder="请输入企业联系人电话" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+
+
+
+
+          <el-form-item label="注册归属地" prop="registrationStreet">
+            <el-select v-model="form.registrationProvince" placeholder="请选择省" v-on="{ focus: seeProvince }"
+              @change="seeCity(2)" style="width:25%">
               <el-option value="">
-              请选择
-             </el-option>
-                <el-option v-for="item in CityList" :key="item.regionId" :label="item.regionName" :value="item.regionId"
-                  :disabled="item.status == 1"></el-option>
+                请选择
+              </el-option>
+              <el-option v-for="item in ProvinceList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select v-model="form.registrationCity" placeholder="请选择市" @change="seeDistinct(2)" style="width:25%">
+              <el-option value="">
+                请选择
+              </el-option>
+              <el-option v-for="item in CityList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select v-model="form.registrationRegion" placeholder="请选择区" style="width:25%" @change="seeStreet(2)">
+              <el-option value="">
+                请选择
+              </el-option>
+              <el-option v-for="item in DistinctList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+            <el-select v-model="form.registrationStreet" placeholder="请选择街道" style="width:25%" @change="seeAny">
+              <el-option value="">
+                请选择
+              </el-option>
+              <el-option v-for="item in streetList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+
+        </el-row>
+
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="产业分类" prop="industryOneLevel">
+              <el-select v-model="form.industryOneLevel" placeholder="请选择产业分类" clearable>
+                <el-option value="">
+                  请选择
+                </el-option>
+                <el-option v-for="dict in dict.type.applicable_industries" :key="dict.value" :label="dict.label"
+                  :value="dict.value" />
               </el-select>
             </el-form-item>
           </el-col>
 
 
           <el-col :span="12">
-            <el-form-item label="注册区域选择" prop="province" label-width="120px">
-              <el-select v-model="form.registrationProvince" placeholder="请选择省"
-                v-on="{ focus: seeProvince, change: seeCity }" style="width:33%">
-                    <el-option value="">
-              请选择
-            </el-option>
-                <el-option v-for="item in ProvinceList" :key="item.regionId" :label="item.regionName"
-                  :value="item.regionId" :disabled="item.status == 1"></el-option>
-              </el-select>
-              <el-select v-model="form.registrationCity" placeholder="请选择市" @change="seeDistinct" style="width:33%">
-                    <el-option value="">
-              请选择
-            </el-option>
-                <el-option v-for="item in CityList" :key="item.regionId" :label="item.regionName" :value="item.regionId"
-                  :disabled="item.status == 1"></el-option>
-              </el-select>
-              <el-select v-model="form.registrationRegion" placeholder="请选择区" style="width:34%">
-                    <el-option value="">
-              请选择
-            </el-option>
-                <el-option v-for="item in DistinctList" :key="item.regionId" :label="item.regionName"
-                  :value="item.regionId" :disabled="item.status == 1"></el-option>
+            <el-form-item label="所属行业" prop="industryTwoLevel">
+              <el-select v-model="form.industryTwoLevel" placeholder="请选择所属行业" clearable>
+                <el-option value="">
+                  请选择
+                </el-option>
+                <el-option v-for="dict in dict.type.trade" :key="dict.value" :label="dict.label" :value="dict.value" />
               </el-select>
             </el-form-item>
           </el-col>
@@ -192,42 +228,30 @@
 
         <el-row>
           <el-col :span="12">
-            <el-form-item label="企业性质或控股类型" prop="enterpriseNature" label-width="150px">
-              <el-select v-model="form.enterpriseNature" placeholder="请选择企业性质" style="width:32%">
-                    <el-option value="">
-              请选择
-            </el-option>
+            <el-form-item label="企业性质或控股类型" prop="enterpriseNature">
+              <el-select v-model="form.enterpriseNature" placeholder="请选择企业性质">
+                <el-option value="">
+                  请选择
+                </el-option>
                 <el-option v-for="item in dict.type.enterprise_nature" :key="item.value" :label="item.label"
                   :value="item.value"></el-option>
               </el-select>
-              <label style="margin-left: 45px;">资产总额区间</label>
-              <el-select v-model="form.totalAssetsRange" placeholder="请选择资产总额区间" style="width:39%;margin-left: 10px;">
-                    <el-option value="">
-              请选择
-            </el-option>
+            </el-form-item>
+
+
+          </el-col>
+
+
+          <el-col :span="12">
+            <el-form-item label="资产总额区间" prop="totalAssetsRange">
+              <el-select v-model="form.totalAssetsRange" placeholder="请选择资产总额区间">
+                <el-option value="">
+                  请选择
+                </el-option>
                 <el-option v-for="item in dict.type.total_assets_range" :key="item.value" :label="item.label"
                   :value="item.value"></el-option>
               </el-select>
             </el-form-item>
-
-
-          </el-col>
-
-
-          <el-col :span="12">
-            <el-form-item label="登记注册类型" prop="registrationType" label-width="120px">
-              <el-select v-model="form.registrationType" placeholder="请选择企业性质" style="width:32%">
-                    <el-option value="">
-              请选择
-            </el-option>
-                <el-option v-for="item in dict.type.enterprise_nature" :key="item.value" :label="item.label"
-                  :value="item.value"></el-option>
-              </el-select>
-              <label style="margin-left:10px">
-                在职人数
-              </label>
-              <el-input-number v-model="form.numberOfEmployees" :min='1' placeholder="请输入在职人数"></el-input-number>
-            </el-form-item>
           </el-col>
         </el-row>
 
@@ -235,12 +259,12 @@
 
           <el-col :span="12">
 
-            <el-form-item label="实缴资本(万元)" prop="seeAlso" label-width="120px">
+            <el-form-item label="实缴资本(万元)" prop="seeAlso">
               <el-input v-model="form.seeAlso" placeholder="请输入实缴资本(万元)" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="注册资本(万元)" prop="registeredCapital" label-width="130px">
+            <el-form-item label="注册资本(万元)" prop="registeredCapital">
               <el-input v-model="form.registeredCapital" placeholder="请输入注册资本(万元)" />
             </el-form-item>
           </el-col>
@@ -249,7 +273,7 @@
         <el-row>
 
 
-          <el-form-item label="官方网站(没有写无)" prop="officialWebsite" label-width="146px">
+          <el-form-item label="官方网站(没有写无)" prop="officialWebsite">
             <el-input v-model="form.officialWebsite" placeholder="请输入官方网站(没有写无)" />
           </el-form-item>
 
@@ -259,24 +283,75 @@
             <el-input v-model="form.enterpriseMailbox" placeholder="请输入企业邮箱" />
           </el-form-item>
         </el-row>
+
         <el-row>
-          <el-row>
 
-            <el-form-item label="社会统一信用代码号" prop="socialUnifiedCreditCodeNumber" label-width="150px">
-              <el-input v-model="form.socialUnifiedCreditCodeNumber" placeholder="请输入社会统一信用代码号" />
-            </el-form-item>
+          <el-form-item label="社会统一信用代码号" prop="socialUnifiedCreditCodeNumber">
+            <el-input v-model="form.socialUnifiedCreditCodeNumber" placeholder="请输入社会统一信用代码号" />
+          </el-form-item>
 
-          </el-row>
+        </el-row>
+
+        <el-row>
+
+          <el-form-item label="经营地址" prop="manageAddress">
+            <el-input v-model="form.manageAddress" placeholder="请输入经营地址" />
+          </el-form-item>
+
+        </el-row>
+        <el-row>
+          <el-form-item label="注册企业地址" prop="address">
+            <el-input v-model="form.address" placeholder="请输入注册企业地址" />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="登记机关" prop="registrationAuthority">
+            <el-input v-model="form.registrationAuthority" placeholder="请输入登记机关" />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="经营范围" prop="natureOfBusiness">
+            <el-input v-model="form.natureOfBusiness" placeholder="请简述企业经营范围" type="textarea" />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="主营业务" prop="mainBusiness">
+            <el-input v-model="form.mainBusiness" placeholder="请简述主营业务" type="textarea" />
+          </el-form-item>
+        </el-row>
+        <el-row>
+          <el-form-item label="符合政策信息" prop="complianceWithPolicyInformation">
+            <el-input v-model="form.complianceWithPolicyInformation" placeholder="请简述符合政策信息" type="textarea" />
+          </el-form-item>
+        </el-row>
+        <el-row>
           <el-col :span="12">
-            <el-form-item label="经营地址" prop="manageAddress">
-              <el-input v-model="form.manageAddress" placeholder="请输入经营地址" />
+            <el-form-item label="营业期限" prop="businessTerm" required>
+              <el-date-picker clearable v-model="form.businessTerm" type="date" value-format="yyyy-MM-dd"
+                placeholder="请选择注册时间">
+              </el-date-picker>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="注册企业地址" prop="address" label-width="120px">
-              <el-input v-model="form.address" placeholder="请输入注册企业地址" />
+            <el-form-item label="注册时间" prop="registrationTime">
+              <el-date-picker clearable v-model="form.registrationTime" type="datetime" value-format="yyyy-MM-dd HH:mm:ss"
+                placeholder="请选择注册时间">
+              </el-date-picker>
             </el-form-item>
           </el-col>
+        </el-row>
+
+        <el-row>
+
+          <el-form-item label="企业标签" prop="tagIds">
+            <el-select v-model="form.tagIds" placeholder="请选择企业标签" multiple style="width: -webkit-fill-available;">
+              <el-option value="">
+                请选择
+              </el-option>
+              <el-option v-for="item in tags" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            </el-select>
+          </el-form-item>
+
         </el-row>
         <el-row>
           <el-col :span="12">
@@ -285,13 +360,10 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="企业标签" prop="tagIds" label-width="90px">
-              <el-select v-model="form.tagIds" placeholder="请选择企业标签" multiple style="width: -webkit-fill-available;">
-                    <el-option value="">
-              请选择
-            </el-option>
-                <el-option v-for="item in tags" :key="item.id" :label="item.name" :value="item.id"></el-option>
-              </el-select>
+            <el-form-item label="登记日期" prop="registrationDate" required>
+              <el-date-picker clearable v-model="form.registrationDate" type="date" value-format="yyyy-MM-dd"
+                placeholder="请选择登记日期">
+              </el-date-picker>
             </el-form-item>
           </el-col>
         </el-row>
@@ -332,7 +404,7 @@ import { listEnterprise, getEnterprise, delEnterprise, addEnterprise, updateEnte
 import { getToken } from "@/utils/auth";
 export default {
   name: "Enterprise",
-  dicts: ['enterprise_nature', 'total_assets_range'],
+  dicts: ['enterprise_nature', 'total_assets_range', 'applicable_industries', 'trade'],
   data() {
     return {
       //全局地址
@@ -350,13 +422,14 @@ export default {
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
         // 上传的地址
-        url: process.env.VUE_APP_BASE_API +"scienceandtechnology/enterprise/importData"
+        url: process.env.VUE_APP_BASE_API + "scienceandtechnology/enterprise/importData"
       },
       //初始化标签
       tags: [],
       CityList: null,
       ProvinceList: null,
       DistinctList: null,
+      streetList: null,
       enterpriseNatureList: [],
       // 遮罩层
       loading: true,
@@ -390,16 +463,24 @@ export default {
         numberOfEmployees: null,
         businessLicenseUrl: null,
         distinct: null,
+        linkman: null,
+        industryOneLevel: null
       },
       // 表单参数
       form: {},
       // 表单校验
       rules: {
+        registrationStreet: [
+          { required: true, message: "企业注册归属地不能为空", trigger: "blur" }
+        ],
         name: [
           { required: true, message: "企业名称不能为空", trigger: "blur" }
         ],
         juridicalPerson: [
           { required: true, message: "企业法人不能为空", trigger: "blur" }
+        ],
+        linkman: [
+          { required: true, message: "企业联系人不能为空", trigger: "blur" }
         ],
         tagIds: [
           { required: true, message: "企业标签不能为空", trigger: "blur" }
@@ -418,6 +499,15 @@ export default {
           {
             required: true,
             message: "企业法人手机号码不能为空", trigger: "blur",
+            pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
+            message: "请输入正确的手机号码",
+            trigger: "blur"
+          }
+        ],
+        linkmanPhone: [
+          {
+            required: true,
+            message: "企业联系人手机号码不能为空", trigger: "blur",
             pattern: /^1[3|4|5|6|7|8|9][0-9]\d{8}$/,
             message: "请输入正确的手机号码",
             trigger: "blur"
@@ -477,7 +567,14 @@ export default {
         businessLicenseUrl: null,
         createTime: null,
         createBy: null,
-        tagIds: null
+        tagIds: null,
+        businessTerm: null,
+        natureOfBusiness: null,
+        registrationAuthority: null,
+        registrationStreet: null,
+        mainBusiness: null,
+        complianceWithPolicyInformation: null,
+        registrationDate: null
       };
       this.resetForm("form");
     },
@@ -506,11 +603,23 @@ export default {
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
+
       const id = row.id || this.ids
       const array = [];
       getEnterprise(id).then(response => {
         this.form = response.data;
-
+        if (this.form.registrationProvince != null) {
+          this.seeProvince();
+        }
+        if (this.form.registrationCity != null) {
+          this.seeCity(1);
+        }
+        if (this.form.registrationRegion != null) {
+          this.seeDistinct(1);
+        }
+        if (this.form.registrationStreet != null) {
+          this.seeStreet(1);
+        }
         this.tags.forEach(element => {
           if (this.form.tagIds != null && this.form.tagIds.indexOf(element.id) != -1) {
 
@@ -527,24 +636,20 @@ export default {
     submitForm() {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          //处理数组转string
+          if (this.form.tagIds.length > 0) {
 
+            this.form.tagIds = this.form.tagIds.join(",");
+          }
           if (this.form.id != null) {
-            //处理数组转string
-            if (this.form.tagIds.length > 0) {
-
-              this.form.tagIds = this.form.tagIds.join(",");
-            }
+            
             updateEnterprise(this.form).then(response => {
               this.$modal.msgSuccess("修改成功");
               this.open = false;
               this.getList();
             });
           } else {
-            //处理数组转string
-            if (this.form.tagIds != null) {
-
-              this.form.tagIds = this.form.tagIds.join(",");
-            }
+           
             addEnterprise(this.form).then(response => {
               this.$modal.msgSuccess("新增成功");
               this.open = false;
@@ -571,34 +676,46 @@ export default {
       }, `enterprise_${new Date().getTime()}.xlsx`)
     },
     seeProvince() {
-      const ProvinceId = '-1';
-      getCity(ProvinceId, 1).then(response => {
+      const ProvinceId = 0;
+      getCity(ProvinceId).then(response => {
         this.ProvinceList = response
       });
-    },
-    seeCity() {
-      var level = '';
-      if (this.form.registrationProvince == '1000000' || this.form.registrationProvince == '1000001' || this.form.registrationProvince == '1000008' || this.form.registrationProvince == '1000021') {
-        level = 1
-      } else {
-        level = 2
-      }
-      getCity(this.form.registrationProvince, level).then(response => { this.CityList = response });
-      this.form.registrationCity = null;
-      this.form.registrationRegion = null;
-    },
-    seeDistinct() {
 
-      var level = '';
-      if (this.form.registrationProvince == '1000000' || this.form.registrationProvince == '1000001' || this.form.registrationProvince == '1000008' || this.form.registrationProvince == '1000021') {
-        level = 2
-      } else {
-        level = 3
+
+
+    },
+    seeCity(type) {
+      getCity(this.form.registrationProvince).then(response => { this.CityList = response });
+      if (type == 2) {
+        this.form.registrationCity = null;
+        this.CityList = null;
+        this.DistinctList = null;
+        this.form.registrationRegion = null;
+        this.streetList = null;
+        this.form.registrationStreet = null;
       }
-      getCity(this.form.registrationCity, level).then(response => {
+
+    },
+    seeDistinct(type) {
+
+      getCity(this.form.registrationCity).then(response => {
         this.DistinctList = response
       });
-      this.form.registrationRegion = null;
+      if (type == 2) {
+        this.DistinctList = null;
+        this.form.registrationRegion = null;
+        this.streetList = null;
+        this.form.registrationStreet = null;
+      }
+    },
+    seeStreet(type) {
+      getCity(this.form.registrationRegion).then(response => {
+        this.streetList = response
+      });
+      if (type == 2) {
+        this.streetList = null;
+        this.form.registrationStreet = null;
+      }
     },
     /** 导入按钮操作 */
     handleImport() {
