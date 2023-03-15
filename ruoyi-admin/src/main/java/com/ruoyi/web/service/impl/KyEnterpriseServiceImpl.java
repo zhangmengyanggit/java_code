@@ -211,6 +211,11 @@ public class KyEnterpriseServiceImpl implements IKyEnterpriseService {
         return successMsg.toString();
     }
 
+    @Override
+    public List<Long> selectKyEnterpriseIds(KyEnterprise kyEnterprise) {
+        return kyEnterpriseMapper.selectKyEnterpriseIds(kyEnterprise);
+    }
+
     private boolean validateEnterpriseByIndustryTwoLevel(KyEnterprise enterprise) {
         {
             //校验是否存在于当前字典中

@@ -70,7 +70,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <include refid="selectKyEnterpriseVo"/>
         where id = #{id}
     </select>
-        
+    <select id="selectKyEnterpriseIds"   parameterType="KyEnterprise" resultType="Long">
+        select   id  from  ky_enterprise
+        where 1=1
+
+        <foreach collection="tagIds.split(',')" item="tagId"
+                 index="index" open=" and (" separator=" or " close=")">
+            FIND_IN_SET(#{tagId},tag_ids)
+        </foreach>
+        and business_term &lt;= CURDATE()
+        and  registration_region=#{registrationRegion}
+    </select>
     <insert id="insertKyEnterprise" parameterType="KyEnterprise" useGeneratedKeys="true" keyProperty="id">
         insert into ky_enterprise
         <trim prefix="(" suffix=")" suffixOverrides=",">

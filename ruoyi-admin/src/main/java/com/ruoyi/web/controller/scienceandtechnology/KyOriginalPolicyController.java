@@ -148,5 +148,14 @@ public class KyOriginalPolicyController extends BaseController
     {
         return toAjax(iKyInterpretationPolicyService.updateKyInterpretationPolicy(kyInterpretationPolicy));
     }
+    /**
+     * 发布
+     */
 
+    @Log(title = "政策发布", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/publishToAllEnterprise")
+    public AjaxResult publishToAllEnterprise(@RequestBody Long id)
+    {
+        return kyOriginalPolicyService.publishToAllEnterprise(id);
+    }
 }

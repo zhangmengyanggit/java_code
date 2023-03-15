@@ -70,4 +70,6 @@ public interface IKyEnterpriseService
      * @return 结果
      */
     public String importEnterprise(List<KyEnterprise> enterpriseList, boolean updateSupport, String operName);
+
+    List<Long>  selectKyEnterpriseIds(KyEnterprise kyEnterprise);
 }

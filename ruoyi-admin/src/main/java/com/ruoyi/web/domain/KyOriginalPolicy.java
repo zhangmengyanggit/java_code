@@ -1,5 +1,6 @@
 package com.ruoyi.web.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -86,7 +87,7 @@ public class KyOriginalPolicy extends BaseEntity
     /** 有效截止时间 */
     @JsonFormat(pattern = "yyyy-MM-dd")
     @Excel(name = "有效截止时间", width = 30, dateFormat = "yyyy-MM-dd")
-    private Date validDate;
+    private LocalDate validDate;
 
     /** 是否已申请兑现：默认0无申请，1有申请 */
     @Excel(name = "是否已申请兑现")
@@ -300,12 +301,12 @@ public class KyOriginalPolicy extends BaseEntity
     {
         return validStatus;
     }
-    public void setValidDate(Date validDate)
+    public void setValidDate(LocalDate  validDate)
     {
         this.validDate = validDate;
     }
 
-    public Date getValidDate()
+    public LocalDate  getValidDate()
     {
         return validDate;
     }

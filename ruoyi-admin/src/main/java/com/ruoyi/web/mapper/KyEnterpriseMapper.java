@@ -59,4 +59,6 @@ public interface KyEnterpriseMapper
      * @return 结果
      */
     public int deleteKyEnterpriseByIds(Long[] ids);
+
+    List<Long> selectKyEnterpriseIds(KyEnterprise kyEnterprise);
 }

@@ -1,6 +1,8 @@
 package com.ruoyi.web.service;
 
 import java.util.List;
+
+import com.ruoyi.common.core.domain.AjaxResult;
 import com.ruoyi.web.domain.KyOriginalPolicy;
 
 /**
@@ -58,4 +60,11 @@ public interface IKyOriginalPolicyService
      * @return 结果
      */
     public int deleteKyOriginalPolicyById(Long id);
+    /**
+     * 发布当前政策给所有符合条件的企业
+     *
+     * @param id 政策管理主键
+     * @return 结果
+     */
+    AjaxResult publishToAllEnterprise(Long id);
 }
