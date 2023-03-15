@@ -4,7 +4,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.ruoyi.common.utils.SecurityUtils;
 import com.ruoyi.common.utils.poi.ExcelUtil;
+import com.ruoyi.web.domain.KyInterpretationPolicy;
 import com.ruoyi.web.domain.KyOriginalPolicy;
+import com.ruoyi.web.service.IKyInterpretationPolicyService;
 import com.ruoyi.web.service.IKyOriginalPolicyService;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +38,8 @@ public class KyOriginalPolicyController extends BaseController
 {
     @Autowired
     private IKyOriginalPolicyService kyOriginalPolicyService;
-
+    @Autowired
+    private IKyInterpretationPolicyService iKyInterpretationPolicyService;
     /**
      * 查询政策管理列表
      */
@@ -105,4 +108,45 @@ public class KyOriginalPolicyController extends BaseController
     {
         return toAjax(kyOriginalPolicyService.deleteKyOriginalPolicyByIds(ids));
     }
+
+    /**
+     * 获取政策解读信息
+     */
+    @GetMapping(value = "/getInterpretationPolicy/{id}")
+    public AjaxResult getInterpretationPolicy(@PathVariable("id") Long id)
+    {
+        KyInterpretationPolicy interpretationPolicy=  iKyInterpretationPolicyService.selectKyInterpretationPolicyByOriginalpolicyId(id);
+        if(interpretationPolicy==null){
+            interpretationPolicy=new KyInterpretationPolicy();
+        }
+        return success(interpretationPolicy);
+    }
+
+    /**
+     * 新增政策解读
+     */
+    @Log(title = "政策解读", businessType = BusinessType.INSERT)
+    @PostMapping(value = "/addInterpretationPolicy")
+    public AjaxResult addInterpretationPolicy(@RequestBody KyInterpretationPolicy kyInterpretationPolicy)
+    {
+        //更新政策状态为已解读
+        KyOriginalPolicy kyOriginalPolicy=new KyOriginalPolicy();
+        kyOriginalPolicy.setId(kyInterpretationPolicy.getOriginalPolicyId());
+        kyOriginalPolicy.setPublishStatus(1l);
+        kyOriginalPolicyService.updateKyOriginalPolicy(kyOriginalPolicy);
+        kyInterpretationPolicy.setCreateBy(SecurityUtils.getUsername());
+        return toAjax(iKyInterpretationPolicyService.insertKyInterpretationPolicy(kyInterpretationPolicy));
+    }
+
+    /**
+     * 修改政策解读
+     */
+
+    @Log(title = "政策解读", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/editInterpretationPolicy")
+    public AjaxResult editInterpretationPolicy(@RequestBody KyInterpretationPolicy kyInterpretationPolicy)
+    {
+        return toAjax(iKyInterpretationPolicyService.updateKyInterpretationPolicy(kyInterpretationPolicy));
+    }
+
 }

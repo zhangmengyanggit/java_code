@@ -30,10 +30,19 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="createTime"    column="create_time"    />
         <result property="createBy"    column="create_by"    />
         <result property="tagIds"    column="tag_ids"    />
+        <result property="linkman"    column="linkman"    />
+        <result property="linkmanPhone"    column="linkman_phone"    />
+        <result property="businessTerm"    column="business_term"    />
+        <result property="natureOfBusiness"    column="nature_of_business"    />
+        <result property="registrationAuthority"    column="registration_authority"    />
+        <result property="registrationStreet"    column="registration_street"    />
+        <result property="mainBusiness"    column="main_business"    />
+        <result property="complianceWithPolicyInformation"    column="compliance_with_policy_information"    />
+        <result property="registrationDate"    column="registration_date"    />
     </resultMap>
 
     <sql id="selectKyEnterpriseVo">
-        select id, name, address, juridical_person, juridical_person_phone, registration_time, registration_province, registration_city, registration_region, manage_address, social_unified_credit_code_number, enterprise_nature, registration_type, total_assets_range, registered_capital, see_also, official_website, enterprise_mailbox, industry_one_level, industry_two_level, number_of_employees, business_license_url, create_time, create_by,tag_ids from ky_enterprise
+        select id,main_business,registration_date,compliance_with_policy_information,registration_authority,registration_street, nature_of_business,name,business_term,linkman_phone,linkman, address, juridical_person, juridical_person_phone, registration_time, registration_province, registration_city, registration_region, manage_address, social_unified_credit_code_number, enterprise_nature, registration_type, total_assets_range, registered_capital, see_also, official_website, enterprise_mailbox, industry_one_level, industry_two_level, number_of_employees, business_license_url, create_time, create_by,tag_ids from ky_enterprise
     </sql>
 
     <select id="selectKyEnterpriseList" parameterType="KyEnterprise" resultMap="KyEnterpriseResult">
@@ -53,6 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
                 and date_format(registration_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
             </if>
+            <if test="industryOneLevel != null  and industryOneLevel != ''"> and industry_one_level = #{industryOneLevel}</if>
         </where>
     </select>
     
@@ -88,6 +98,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="createBy != null">create_by,</if>
             <if test="tagIds != null">tag_ids,</if>
+            <if test="linkman != null">linkman,</if>
+            <if test="linkmanPhone != null">linkman_phone,</if>
+            <if test="businessTerm != null">business_term,</if>
+            <if test="natureOfBusiness != null">nature_of_business,</if>
+            <if test="registrationAuthority != null">registration_authority,</if>
+            <if test="registrationStreet != null">registration_street,</if>
+            <if test="mainBusiness != null">main_business,</if>
+            <if test="complianceWithPolicyInformation != null">compliance_with_policy_information,</if>
+            <if test="registrationDate != null">registration_date,</if>
          </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="name != null and name != ''">#{name},</if>
@@ -114,6 +133,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">#{createTime},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="tagIds != null">#{tagIds},</if>
+            <if test="linkman != null">#{linkman},</if>
+            <if test="linkmanPhone != null">#{linkmanPhone},</if>
+            <if test="businessTerm != null">#{businessTerm},</if>
+            <if test="natureOfBusiness != null">#{natureOfBusiness},</if>
+            <if test="registrationAuthority != null">#{registrationAuthority},</if>
+            <if test="registrationStreet != null">#{registrationStreet},</if>
+            <if test="mainBusiness != null">#{mainBusiness},</if>
+            <if test="complianceWithPolicyInformation != null">#{complianceWithPolicyInformation},</if>
+            <if test="registrationDate != null">#{registrationDate},</if>
          </trim>
     </insert>
 
@@ -143,7 +171,16 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="businessLicenseUrl != null">business_license_url = #{businessLicenseUrl},</if>
             <if test="createTime != null">create_time = #{createTime},</if>
             <if test="createBy != null">create_by = #{createBy},</if>
-            <if test="tagIds != null">tag_ids=#{tagIds}</if>
+            <if test="tagIds != null">tag_ids=#{tagIds},</if>
+            <if test="linkman != null">linkman=#{linkman},</if>
+            <if test="linkmanPhone != null">linkman_phone=#{linkmanPhone},</if>
+            <if test="businessTerm != null">business_term=#{businessTerm},</if>
+            <if test="natureOfBusiness != null">nature_of_business=#{natureOfBusiness},</if>
+            <if test="registrationAuthority != null">registration_authority=#{registrationAuthority},</if>
+            <if test="registrationStreet != null">registration_street=#{registrationStreet},</if>
+            <if test="mainBusiness != null">main_business=#{mainBusiness},</if>
+            <if test="complianceWithPolicyInformation != null">compliance_with_policy_information=#{complianceWithPolicyInformation},</if>
+            <if test="registrationDate != null">registration_date=#{registrationDate},</if>
         </trim>
         where id = #{id}
     </update>

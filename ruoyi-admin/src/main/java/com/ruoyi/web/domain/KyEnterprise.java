@@ -47,15 +47,16 @@ public class KyEnterprise extends BaseEntity
     private Date registrationTime;
 
     /** 注册省份 */
-    private String registrationProvince;
+        private Integer registrationProvince;
 
     /** 注册市 */
-    private String registrationCity;
+    private Integer registrationCity;
 
     /** 注册区 */
-    private String registrationRegion;
+    private Integer registrationRegion;
 
     /** 经营地址 */
+    @Excel(name = "经营地址")
     private String manageAddress;
 
     /** 社会统一信用代码号 */
@@ -66,8 +67,8 @@ public class KyEnterprise extends BaseEntity
     @Excel(name = "企业性质或控股类型", dictType = "enterprise_nature",prompt = "请填写系统字典管理中的企业性质或控股类型名称")
     private String enterpriseNature;
 
-    /** 登记注册类型 */
-    @Excel(name = "登记注册类型")
+    /** 注册街道（用于导入数据） */
+    @Excel(name = "注册街道")
     private String registrationType;
 
     /** 资产总额区间：1. 0---50万，2. 50---200万,3.200--500万，4.500--1000万，5.1000万--1亿，6.1亿以上 */
@@ -90,10 +91,12 @@ public class KyEnterprise extends BaseEntity
     @Excel(name = "企业邮箱")
     private String enterpriseMailbox;
 
-    /** 所属行业一级 */
+    /** 产业类型*/
+    @Excel(name = "产业类型", dictType = "applicable_industries",prompt = "请填写系统字典管理中的产业类型")
     private String industryOneLevel;
 
-    /** 所属行业二级 */
+    /** 行业*/
+    @Excel(name = "行业", dictType = "trade",prompt = "请填写系统字典管理中的行业")
     private String industryTwoLevel;
 
     /** 在职人数
@@ -106,6 +109,107 @@ public class KyEnterprise extends BaseEntity
     /** 企业标签集合 */
     @Excel(name = "企业标签(标签id集合，例:1,2)",width = 30)
     private String tagIds;
+    @Excel(name = "联系人")
+    private String  linkman;
+    @Excel(name = "联系人电话")
+    private String  linkmanPhone;
+    /** 营业期限 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "营业期限", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date businessTerm;
+    /** 经营范围 */
+    @Excel(name = "经营范围")
+    private String  natureOfBusiness;
+    /** 登记机关 */
+    @Excel(name = "登记机关")
+    private String  registrationAuthority;
+    /** 登记日期 */
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Excel(name = "登记日期", width = 30, dateFormat = "yyyy-MM-dd")
+    private Date  registrationDate;
+    /** 注册街道 */
+   /* @Excel(name = "注册街道")*/
+    private Integer  registrationStreet;
+    /** 主营业务 */
+    @Excel(name = "主营业务")
+    private String mainBusiness;
+    /** 符合政策信息 */
+    @Excel(name = "符合政策信息")
+    private String complianceWithPolicyInformation;
+
+
+    public Date getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(Date registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public String getComplianceWithPolicyInformation() {
+        return complianceWithPolicyInformation;
+    }
+
+    public void setComplianceWithPolicyInformation(String complianceWithPolicyInformation) {
+        this.complianceWithPolicyInformation = complianceWithPolicyInformation;
+    }
+
+    public String getMainBusiness() {
+        return mainBusiness;
+    }
+
+    public void setMainBusiness(String mainBusiness) {
+        this.mainBusiness = mainBusiness;
+    }
+
+    public Integer getRegistrationStreet() {
+        return registrationStreet;
+    }
+
+    public void setRegistrationStreet(Integer registrationStreet) {
+        this.registrationStreet = registrationStreet;
+    }
+
+    public String getRegistrationAuthority() {
+        return registrationAuthority;
+    }
+
+    public void setRegistrationAuthority(String registrationAuthority) {
+        this.registrationAuthority = registrationAuthority;
+    }
+
+    public String getNatureOfBusiness() {
+        return natureOfBusiness;
+    }
+
+    public void setNatureOfBusiness(String natureOfBusiness) {
+        this.natureOfBusiness = natureOfBusiness;
+    }
+
+    public Date getBusinessTerm() {
+        return businessTerm;
+    }
+
+    public void setBusinessTerm(Date businessTerm) {
+        this.businessTerm = businessTerm;
+    }
+
+    @NotBlank(message= "联系人不能为空")
+    public String getLinkman() {
+        return linkman;
+    }
+
+    public void setLinkman(String linkman) {
+        this.linkman = linkman;
+    }
+    @NotBlank(message= "联系人电话不能为空")
+    public String getLinkmanPhone() {
+        return linkmanPhone;
+    }
+
+    public void setLinkmanPhone(String linkmanPhone) {
+        this.linkmanPhone = linkmanPhone;
+    }
 
     public void setTagIds(String tagIds) {
         this.tagIds = tagIds;
@@ -170,30 +274,30 @@ public class KyEnterprise extends BaseEntity
     {
         return registrationTime;
     }
-    public void setRegistrationProvince(String registrationProvince) 
+    public void setRegistrationProvince(Integer registrationProvince)
     {
         this.registrationProvince = registrationProvince;
     }
 
-    public String getRegistrationProvince() 
+    public Integer getRegistrationProvince()
     {
         return registrationProvince;
     }
-    public void setRegistrationCity(String registrationCity) 
+    public void setRegistrationCity(Integer registrationCity)
     {
         this.registrationCity = registrationCity;
     }
 
-    public String getRegistrationCity() 
+    public Integer getRegistrationCity()
     {
         return registrationCity;
     }
-    public void setRegistrationRegion(String registrationRegion) 
+    public void setRegistrationRegion(Integer registrationRegion)
     {
         this.registrationRegion = registrationRegion;
     }
 
-    public String getRegistrationRegion() 
+    public Integer getRegistrationRegion()
     {
         return registrationRegion;
     }
@@ -228,7 +332,7 @@ public class KyEnterprise extends BaseEntity
     {
         this.registrationType = registrationType;
     }
-
+    @NotBlank(message= "注册街道不能为空")
     public String getRegistrationType() 
     {
         return registrationType;

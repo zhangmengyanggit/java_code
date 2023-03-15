@@ -1,12 +1,13 @@
 package com.ruoyi.web.service.impl;
 
-import java.util.List;
 
-import com.ruoyi.web.domain.SysRegion;
-import com.ruoyi.web.mapper.SysRegionMapper;
-import com.ruoyi.web.service.ISysRegionService;
+import com.ruoyi.web.domain.SysArea;
+import com.ruoyi.web.mapper.SysAreaMapper;
+import com.ruoyi.web.service.ISysAreaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 地区Service业务层处理
@@ -15,10 +16,10 @@ import org.springframework.stereotype.Service;
  * @date 2023-03-09
  */
 @Service
-public class SysRegionServiceImpl implements ISysRegionService
+public class SysAreaServiceImpl implements ISysAreaService
 {
     @Autowired
-    private SysRegionMapper sysRegionMapper;
+    private SysAreaMapper sysRegionMapper;
 
     /**
      * 查询地区
@@ -27,7 +28,7 @@ public class SysRegionServiceImpl implements ISysRegionService
      * @return 地区
      */
     @Override
-    public SysRegion selectSysRegionByRegionId(String regionId)
+    public SysArea selectSysRegionByRegionId(Integer regionId)
     {
         return sysRegionMapper.selectSysRegionByRegionId(regionId);
     }
@@ -39,8 +40,14 @@ public class SysRegionServiceImpl implements ISysRegionService
      * @return 地区
      */
     @Override
-    public List<SysRegion> selectSysRegionList(SysRegion sysRegion)
+    public List<SysArea> selectSysRegionList(SysArea sysRegion)
     {
         return sysRegionMapper.selectSysRegionList(sysRegion);
     }
+
+    @Override
+    public SysArea selectBySysArea(SysArea sysAreaParams) {
+        return sysRegionMapper.selectBySysArea(sysAreaParams);
+    }
+
 }

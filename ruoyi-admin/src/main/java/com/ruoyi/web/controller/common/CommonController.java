@@ -4,8 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import com.ruoyi.web.domain.SysRegion;
-import com.ruoyi.web.service.ISysRegionService;
+
+import com.ruoyi.common.core.domain.entity.SysDept;
+import com.ruoyi.system.service.ISysDeptService;
+import com.ruoyi.web.domain.SysArea;
+import com.ruoyi.web.service.ISysAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +40,10 @@ public class CommonController
     @Autowired
     private ServerConfig serverConfig;
     @Autowired
-    private ISysRegionService iSysRegionService;
+    private ISysAreaService iSysRegionService;
+
+    @Autowired
+    private ISysDeptService sysDeptService ;
     private static final String FILE_DELIMETER = ",";
 
     /**
@@ -169,11 +175,24 @@ public class CommonController
      */
 
     @GetMapping("/getCityList")
-    public List<SysRegion> getCity(String cityId,Long level)
+    public List<SysArea> getCity(Integer cityId)
     {
-        SysRegion sysRegion=new SysRegion();
-        sysRegion.setRegionParentId(cityId);
-        sysRegion.setRegionLevel(level);
-      return iSysRegionService.selectSysRegionList(sysRegion);
+        SysArea sysRegion=new SysArea();
+        sysRegion.setPid(cityId);
+        List<SysArea> areas= iSysRegionService.selectSysRegionList(sysRegion);
+      return areas;
+    }
+
+    /**
+     * 查询部门集合根据父id
+     */
+
+    @GetMapping("/getDepartment")
+    public List<SysDept> getDepartment(Long parentId)
+    {
+        SysDept sysDept=new SysDept();
+        sysDept.setParentId(parentId);
+        List<SysDept> sysDepts= sysDeptService.selectDeptList(sysDept);
+        return sysDepts;
     }
 }
