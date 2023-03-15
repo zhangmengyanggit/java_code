@@ -116,7 +116,7 @@
 
     <el-table v-loading="loading" :data="originalpolicyList" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="55" align="center" />
-      <el-table-column label="标题" width="600" align="center" prop="tittle" />
+      <el-table-column label="标题" width="350" align="center" prop="tittle" />
       <el-table-column label="政策级别" align="center" prop="policyLevel">
         <template slot-scope="scope">
           <dict-tag :options="dict.type.rank" :value="scope.row.policyLevel"/>
@@ -155,6 +155,36 @@
             @click="handleUpdate(scope.row)"
             v-hasPermi="['scienceandtechnology:originalpolicy:edit']"
           >修改</el-button>
+          <el-popover
+            v-model="handlePop"
+            placement="left-start"
+            :ref="`node-${scope.row.id}`"
+          >
+            <el-button
+              slot="reference"
+              v-hasPermi="['scienceandtechnology:originalpolicy:edit']"
+              size="mini"
+              type="text"
+              icon="el-icon-s-check"
+            >发布</el-button>
+            <div>
+              <p>选择发布操作：</p>
+              <div>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  :loading="publishLoading"
+                  @click="handlePublish(scope.row)"
+                >发布到所有企业</el-button>
+                <el-button
+                  size="mini"
+                  type="success"
+                  @click="publishToSelect(scope.row)"
+                >发布到指定企业</el-button>
+                <el-button size="mini" @click="handlePop = false">取消发布</el-button>
+              </div>
+            </div>
+          </el-popover>
           <el-button
             size="mini"
             type="text"
@@ -184,15 +214,15 @@
         </el-form-item>
         <el-form-item label="政策级别" prop="policyLevel">
           <el-select v-model="form.policyLevel" placeholder="请选择政策级别">
-             <el-option>
-                请选择
-              </el-option>
-            <el-option 
+            <el-option>
+              请选择
+            </el-option>
+            <el-option
               v-for="dict in dict.type.rank"
               :key="dict.value"
               :label="dict.label"
               :value="dict.value"
-            ></el-option>
+            />
           </el-select>
         </el-form-item>
         <el-form-item label="适用行业" prop="applicableIndustries">
@@ -233,17 +263,32 @@
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
+    <!-- 添加 发布到企业对话框 -->
+    <SelectEnterprise
+      :visible.sync="enterpriseVisible"
+      :originalpolicy-id="originalpolicyId"
+    />
   </div>
 </template>
 
 <script>
 import { listOriginalpolicy, getOriginalpolicy, delOriginalpolicy, addOriginalpolicy, updateOriginalpolicy } from "@/api/scienceandtechnology/originalpolicy/originalpolicy";
+import SelectEnterprise from '@/views/components/SelectEnterprise'
 
 export default {
   name: "Originalpolicy",
   dicts: ['rank', 'applicable_industries','show_state'],
+  components: {
+    SelectEnterprise
+  },
   data() {
     return {
+      // 发布弹出框
+      handlePop: false,
+      // 发布操作loading
+      publishLoading: false,
+      enterpriseVisible: false,
+      originalpolicyId: '',
       // 遮罩层
       loading: true,
       // 选中数组
@@ -384,6 +429,28 @@ export default {
         this.open = true;
         this.title = "修改政策管理";
       });
+    },
+    /** 发布按钮操作 */
+    handlePublish(row) {
+      this.publishLoading = true;
+      const id = row.id || this.ids;
+      console.log('id', id);
+      new Promise((re, rj) => {
+        setTimeout(() => {
+          this.$message.success('发布成功');
+          re();
+        }, 2000);
+      }).finally(() => {
+        this.publishLoading = false;
+        this.handlePop = false;
+        // 请求更新列表
+      });
+    },
+    // 发布到指定企业
+    publishToSelect(row) {
+      this.enterpriseVisible = true;
+      const id = row.id || this.ids;
+      this.originalpolicyId = id;
     },
     /** 提交按钮 */
     submitForm() {
