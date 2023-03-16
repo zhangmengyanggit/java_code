@@ -2,6 +2,7 @@ package com.ruoyi.web.service.impl;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -147,9 +148,67 @@ public class KyOriginalPolicyServiceImpl implements IKyOriginalPolicyService
         if (kyProjectDeclarations.size()==0){
             //插入项目申报表
             iKyProjectDeclarationService.insertKyProjectDeclaration(kyProjectDeclaration);
+        }else{
+            kyProjectDeclaration.setId(kyProjectDeclarations.get(0).getId());
         }
 
         for (Long enterpriseId:enterpriseIdList) {
+            KyEnterpriseProjectDeclaration kyEnterpriseProjectDeclaration=new KyEnterpriseProjectDeclaration();
+            kyEnterpriseProjectDeclaration.setProjectDeclarationId(kyProjectDeclaration.getId());
+            kyEnterpriseProjectDeclaration.setEnterpriseId(enterpriseId);
+            List<KyEnterpriseProjectDeclaration>  kyEnterpriseProjectDeclarations=   iKyEnterpriseProjectDeclarationService.selectKyEnterpriseProjectDeclarationList(kyEnterpriseProjectDeclaration);
+            if (kyEnterpriseProjectDeclarations.size()==0){
+                //插入企业申请项目表
+                iKyEnterpriseProjectDeclarationService.insertKyEnterpriseProjectDeclaration(kyEnterpriseProjectDeclaration);
+                //异步发消息通知企业
+
+            }
+        }
+        return AjaxResult.success("发布成功");
+    }
+
+    @Override
+    @Transactional
+    public AjaxResult publishByenterpriseAndIds(String ids, Long originalpolicyId) {
+        //查询政策信息
+        KyOriginalPolicy kyOriginalPolicy= selectKyOriginalPolicyById(originalpolicyId);
+        //判断当前政策是否有效
+        if (kyOriginalPolicy.getValidStatus().equals(1l)){
+            return AjaxResult.error("当前政策已无效");
+        }
+        //判断当前政策是否过期
+        if (kyOriginalPolicy.getValidDate().isBefore(LocalDate.now())){
+            return AjaxResult.error("当前政策已过期");
+        }
+        //查询所有符合条件企业
+        KyEnterprise kyEnterprise=new KyEnterprise();
+        kyEnterprise.setTagIds(kyOriginalPolicy.getTagIds());
+        //kyEnterprise.setBusinessTerm(new Date());
+        kyEnterprise.setRegistrationRegion(19973);//猇亭写死
+
+        long[] enterpriseIdArr = Arrays.asList(ids.split(",")).stream().mapToLong(Long::parseLong).toArray();
+
+        if(enterpriseIdArr.length==0){
+            return AjaxResult.error("符合条件的企业不存在");
+        }
+        if (!kyOriginalPolicy.getPublishStatus().equals(2l)){
+            //更改政策表状态
+            kyOriginalPolicy.setPublishStatus(2l);
+            kyOriginalPolicy.setPublisher(SecurityUtils.getUsername());
+            kyOriginalPolicy.setPublishTime(new Date());
+            updateKyOriginalPolicy(kyOriginalPolicy);
+        }
+        KyProjectDeclaration kyProjectDeclaration=new KyProjectDeclaration();
+        kyProjectDeclaration.setOriginalPolicyId(originalpolicyId);
+        List<KyProjectDeclaration>  kyProjectDeclarations=  iKyProjectDeclarationService.selectKyProjectDeclarationList(kyProjectDeclaration);
+        if (kyProjectDeclarations.size()==0){
+            //插入项目申报表
+            iKyProjectDeclarationService.insertKyProjectDeclaration(kyProjectDeclaration);
+        }else{
+            kyProjectDeclaration.setId(kyProjectDeclarations.get(0).getId());
+        }
+
+        for (Long enterpriseId:enterpriseIdArr) {
             KyEnterpriseProjectDeclaration kyEnterpriseProjectDeclaration=new KyEnterpriseProjectDeclaration();
             kyEnterpriseProjectDeclaration.setProjectDeclarationId(kyProjectDeclaration.getId());
             kyEnterpriseProjectDeclaration.setEnterpriseId(enterpriseId);

@@ -1,6 +1,7 @@
 package com.ruoyi.web.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import com.ruoyi.web.domain.KyEnterpriseProjectDeclaration;
 import com.ruoyi.web.mapper.KyEnterpriseProjectDeclarationMapper;
@@ -90,5 +91,10 @@ public class KyEnterpriseProjectDeclarationServiceImpl implements IKyEnterpriseP
     public int deleteKyEnterpriseProjectDeclarationById(Long id)
     {
         return kyEnterpriseProjectDeclarationMapper.deleteKyEnterpriseProjectDeclarationById(id);
+    }
+
+    @Override
+    public Long selectKyEnterpriseProjectDeclarationCountByParams(Map<String, Object> paramsMap) {
+        return kyEnterpriseProjectDeclarationMapper.selectKyEnterpriseProjectDeclarationCountByParams(paramsMap);
     }
 }

@@ -25,6 +25,7 @@ import com.ruoyi.common.enums.BusinessType;
 import com.ruoyi.common.core.page.TableDataInfo;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 政策管理Controller
@@ -149,7 +150,7 @@ public class KyOriginalPolicyController extends BaseController
         return toAjax(iKyInterpretationPolicyService.updateKyInterpretationPolicy(kyInterpretationPolicy));
     }
     /**
-     * 发布
+     * 发布全部
      */
 
     @Log(title = "政策发布", businessType = BusinessType.UPDATE)
@@ -157,5 +158,18 @@ public class KyOriginalPolicyController extends BaseController
     public AjaxResult publishToAllEnterprise(@RequestBody Long id)
     {
         return kyOriginalPolicyService.publishToAllEnterprise(id);
+    }
+
+    /**
+     * 发布（根据选择的企业）
+     */
+
+    @Log(title = "政策发布", businessType = BusinessType.UPDATE)
+    @PostMapping(value = "/publishByenterpriseAndIds")
+    public AjaxResult publishByenterpriseAndIds(@RequestBody Map<String,Object> paramsMap)
+    {
+       String ids=String.valueOf( paramsMap.get("ids"));
+       Long originalpolicyId= Long.valueOf(paramsMap.get("originalpolicyId").toString());
+        return kyOriginalPolicyService.publishByenterpriseAndIds(ids,originalpolicyId);
     }
 }

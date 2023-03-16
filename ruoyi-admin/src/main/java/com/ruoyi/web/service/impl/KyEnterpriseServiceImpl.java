@@ -10,9 +10,11 @@ import com.ruoyi.common.utils.bean.BeanValidators;
 import com.ruoyi.system.service.ISysDictDataService;
 import com.ruoyi.system.service.impl.SysUserServiceImpl;
 import com.ruoyi.web.domain.KyEnterprise;
+import com.ruoyi.web.domain.KyEnterpriseProjectDeclaration;
 import com.ruoyi.web.domain.SysArea;
 import com.ruoyi.web.domain.Tag;
 import com.ruoyi.web.mapper.KyEnterpriseMapper;
+import com.ruoyi.web.service.IKyEnterpriseProjectDeclarationService;
 import com.ruoyi.web.service.IKyEnterpriseService;
 import com.ruoyi.web.service.ISysAreaService;
 import com.ruoyi.web.service.ITagService;
@@ -22,7 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Validator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -44,6 +48,8 @@ public class KyEnterpriseServiceImpl implements IKyEnterpriseService {
     private ITagService iTagService;
     @Autowired
     private ISysAreaService sysAreaService;
+    @Autowired
+    private IKyEnterpriseProjectDeclarationService iKyEnterpriseProjectDeclarationService;
 
     /**
      * 查询企业
@@ -64,7 +70,21 @@ public class KyEnterpriseServiceImpl implements IKyEnterpriseService {
      */
     @Override
     public List<KyEnterprise> selectKyEnterpriseList(KyEnterprise kyEnterprise) {
-        return kyEnterpriseMapper.selectKyEnterpriseList(kyEnterprise);
+        //发布时禁用，选中判断
+        List<KyEnterprise>  kyEnterprises=   kyEnterpriseMapper.selectKyEnterpriseList(kyEnterprise);
+        if(StringUtils.isNotNull(kyEnterprise.getOriginalpolicyId())) {
+            for (KyEnterprise enterprise:kyEnterprises) {
+                Map<String,Object> paramsMap=new HashMap();
+                paramsMap.put("originalpolicyId",kyEnterprise.getOriginalpolicyId());
+                paramsMap.put("enterpriseId",enterprise.getId());
+                Long count=   iKyEnterpriseProjectDeclarationService.selectKyEnterpriseProjectDeclarationCountByParams(paramsMap);
+                if (count>0){
+                    enterprise.setDisabled(false);
+                    enterprise.setSelected(true);
+                }
+            }
+        }
+        return kyEnterprises;
     }
 
     /**

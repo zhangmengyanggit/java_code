@@ -3,6 +3,7 @@ package com.ruoyi.web.mapper;
 import com.ruoyi.web.domain.KyEnterpriseProjectDeclaration;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 企业申请项目Mapper接口
@@ -59,4 +60,6 @@ public interface KyEnterpriseProjectDeclarationMapper
      * @return 结果
      */
     public int deleteKyEnterpriseProjectDeclarationByIds(Long[] ids);
+
+    Long selectKyEnterpriseProjectDeclarationCountByParams(Map<String, Object> paramsMap);
 }

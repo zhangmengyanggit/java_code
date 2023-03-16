@@ -63,6 +63,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                 and date_format(registration_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
             </if>
             <if test="industryOneLevel != null  and industryOneLevel != ''"> and industry_one_level = #{industryOneLevel}</if>
+            <if  test="tagIds!=null and tagIds!=''">
+
+                 <foreach collection="tagIds.split(',')" item="tagId"
+                          index="index" open=" and (" separator=" or " close=")">
+                     FIND_IN_SET(#{tagId},tag_ids)
+                 </foreach>
+            </if>
+            <if test="registrationRegion!=null and registrationRegion!=''" >
+                and registration_region = #{registrationRegion}
+                and business_term >=  CURDATE()
+            </if>
         </where>
     </select>
     
@@ -78,7 +89,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                  index="index" open=" and (" separator=" or " close=")">
             FIND_IN_SET(#{tagId},tag_ids)
         </foreach>
-        and business_term &lt;= CURDATE()
+        and business_term >= CURDATE()
         and  registration_region=#{registrationRegion}
     </select>
     <insert id="insertKyEnterprise" parameterType="KyEnterprise" useGeneratedKeys="true" keyProperty="id">

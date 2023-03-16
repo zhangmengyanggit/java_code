@@ -67,4 +67,7 @@ public interface IKyOriginalPolicyService
      * @return 结果
      */
     AjaxResult publishToAllEnterprise(Long id);
+
+
+    AjaxResult publishByenterpriseAndIds(String ids, Long originalpolicyId);
 }

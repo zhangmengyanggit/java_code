@@ -48,7 +48,18 @@
         <include refid="selectKyEnterpriseProjectDeclarationVo"/>
         where id = #{id}
     </select>
+    <select id="selectKyEnterpriseProjectDeclarationCountByParams" parameterType="Map" resultType="Long">
+        SELECT count(1) FROM  ky_enterprise_project_declaration  epd join `ky_project_declaration`  pd  on  epd.project_declaration_id=pd.id
+        <where>
+            <if test="originalpolicyId!=null">
+                and pd.original_policy_id=#{originalpolicyId}
+            </if>
+            <if test="enterpriseId!=null">
+                and epd.enterprise_id=#{enterpriseId}
+            </if>
+        </where>
 
+    </select>
     <insert id="insertKyEnterpriseProjectDeclaration" parameterType="KyEnterpriseProjectDeclaration" useGeneratedKeys="true" keyProperty="id">
         insert into ky_enterprise_project_declaration
         <trim prefix="(" suffix=")" suffixOverrides=",">

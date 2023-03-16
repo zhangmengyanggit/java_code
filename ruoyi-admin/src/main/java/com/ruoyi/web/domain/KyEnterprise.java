@@ -137,6 +137,33 @@ public class KyEnterprise extends BaseEntity
     @Excel(name = "符合政策信息")
     private String complianceWithPolicyInformation;
 
+    private  Boolean isSelected=false;
+    private  Boolean disabled=true;
+    private Long originalpolicyId;
+
+    public Long getOriginalpolicyId() {
+        return originalpolicyId;
+    }
+
+    public void setOriginalpolicyId(Long originalpolicyId) {
+        this.originalpolicyId = originalpolicyId;
+    }
+
+    public Boolean getSelected() {
+        return isSelected;
+    }
+
+    public void setSelected(Boolean selected) {
+        isSelected = selected;
+    }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
 
     public Date getRegistrationDate() {
         return registrationDate;
